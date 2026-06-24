@@ -1,0 +1,33 @@
+# === UE5 项目忽略 ===
+# 二进制 / 编译产物
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.sln.docstates
+
+# Rider
+StudyProject/.idea/
+
+# UE 编辑器自动生成
+StudyProject/StudyProject.sln
+
+# 缓存 / 临时
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.tmp
+.cache/
+
+# === 学习仓库自身 ===
+.thumbs/
+*.bak
