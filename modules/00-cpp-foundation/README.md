@@ -8,7 +8,7 @@
 |---|------|--------|
 | 01 | `01-build-config/` | Build.cs / Target.cs — 模块依赖与编译配置 ✅ |
 | 02 | `02-plugin-structure/` | .uproject / Plugin 结构 — 创建第一个插件 ✅ |
-| 03 | `03-module-split/` | Module 划分 (Runtime / Editor / PrimaryGameModule) |
+| 03 | `03-module-split/` | Module 划分 (Runtime / Editor / PrimaryGameModule) ✅ |
 | 04 | `04-thirdparty-lib/` | 第三方库集成 (ThirdParty + .lib 链接) |
 | 05 | `05-live-coding/` | Live Coding / Hot Reload 工作流 |
 
