@@ -1,14 +1,14 @@
 # 学习进度
 
 > 最后更新：2026-06-23
-> 总进度：3 / 130
+> 总进度：4 / 130
 > 对应大纲：OUTLINE.md (v2)
 
 ## 进度总览
 
 | 模块 | 完成 | 总计 | 进度 |
 |------|:---:|:---:|:----:|
-| 0. C++ 工程基建 | 3 | 5 | 60% |
+| 0. C++ 工程基建 | 4 | 5 | 80% |
 | 1. 核心框架 & Gameplay 架构 | 0 | 19 | 0% |
 | 2. 蓝图 & C++ 协作 | 0 | 7 | 0% |
 | 3. Enhanced Input 系统 | 0 | 6 | 0% |
@@ -33,7 +33,7 @@
 - [x] 0.1 Build.cs / Target.cs — 模块依赖与编译配置                    | 2026-06-23 | 笔记: 理解 Public/Private 依赖区别，Target.cs 管编译目标，Build.cs 管模块依赖
 - [x] 0.2 .uproject / Plugin 结构 — 创建第一个插件                    | 2026-06-24 | 笔记: 插件=描述文件+模块，IModuleInterface 生命周期，Public/Private 可见性，主项目可依赖插件模块
 - [x] 0.3 Module 划分 (Runtime / Editor / PrimaryGameModule)          | 2026-06-24 | 笔记: Runtime+Editor 双模块拆分，Editor→Runtime 单向依赖，ToolMenus 注册工具栏按钮
-- [ ] 0.4 第三方库集成 (ThirdParty + .lib 链接)
+- [x] 0.4 第三方库集成 (ThirdParty + .lib 链接)                       | 2026-06-24 | 笔记: C 静态库三步集成法(include path + .lib 链接 + Wrapper 包装), extern "C" 防 name mangling
 - [ ] 0.5 Live Coding / Hot Reload 工作流
 
 ## 模块 1: 核心框架 & Gameplay 架构

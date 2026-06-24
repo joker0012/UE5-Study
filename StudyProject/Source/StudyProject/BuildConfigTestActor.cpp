@@ -5,6 +5,7 @@
 
 #include "BuildConfigTestActor.h"
 #include "StudyPluginExample.h"   // 0.2 — 引用插件的示例类
+#include "SimpleMathWrapper.h"    // 0.4 — 引用第三方库包装类
 
 ABuildConfigTestActor::ABuildConfigTestActor()
 {
@@ -60,6 +61,12 @@ void ABuildConfigTestActor::PrintModuleDependencyInfo()
 	UE_LOG(LogTemp, Warning, TEXT("===== 插件调用验证 ====="));
 	UE_LOG(LogTemp, Log, TEXT("插件问候: %s"), *FStudyPluginExample::GetGreeting());
 	UE_LOG(LogTemp, Log, TEXT("插件计算 3 + 5 = %d"), FStudyPluginExample::Add(3, 5));
+
+	// ━━━━━━━━━━━━━━━━ 0.4 — 验证第三方库调用 ━━━━━━━━━━━━━━━━
+	// 通过插件包装类调用第三方 C 库，验证「第三方库集成成功」
+	UE_LOG(LogTemp, Warning, TEXT("===== 第三方库调用验证 ====="));
+	FString MathResults = FSimpleMathWrapper::RunAllTests();
+	UE_LOG(LogTemp, Log, TEXT("%s"), *MathResults);
 }
 
 int32 ABuildConfigTestActor::GetTestValueSquared() const
