@@ -4,6 +4,7 @@
 // ============================================================
 
 #include "BuildConfigTestActor.h"
+#include "StudyPluginExample.h"   // 0.2 — 引用插件的示例类
 
 ABuildConfigTestActor::ABuildConfigTestActor()
 {
@@ -53,6 +54,12 @@ void ABuildConfigTestActor::PrintModuleDependencyInfo()
 #endif
 
 	UE_LOG(LogTemp, Warning, TEXT("===== 验证完成，如果上面都有输出说明依赖配置正确 ====="));
+
+	// ━━━━━━━━━━━━━━━━ 0.2 — 验证插件调用 ━━━━━━━━━━━━━━━━
+	// 调用 StudyPlugin 插件提供的方法，验证「主项目能调用插件代码」
+	UE_LOG(LogTemp, Warning, TEXT("===== 插件调用验证 ====="));
+	UE_LOG(LogTemp, Log, TEXT("插件问候: %s"), *FStudyPluginExample::GetGreeting());
+	UE_LOG(LogTemp, Log, TEXT("插件计算 3 + 5 = %d"), FStudyPluginExample::Add(3, 5));
 }
 
 int32 ABuildConfigTestActor::GetTestValueSquared() const

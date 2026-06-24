@@ -1,14 +1,14 @@
 # 学习进度
 
 > 最后更新：2026-06-23
-> 总进度：1 / 130
+> 总进度：2 / 130
 > 对应大纲：OUTLINE.md (v2)
 
 ## 进度总览
 
 | 模块 | 完成 | 总计 | 进度 |
 |------|:---:|:---:|:----:|
-| 0. C++ 工程基建 | 1 | 5 | 20% |
+| 0. C++ 工程基建 | 2 | 5 | 40% |
 | 1. 核心框架 & Gameplay 架构 | 0 | 19 | 0% |
 | 2. 蓝图 & C++ 协作 | 0 | 7 | 0% |
 | 3. Enhanced Input 系统 | 0 | 6 | 0% |
@@ -31,7 +31,7 @@
 ## 模块 0: C++ 工程基建
 
 - [x] 0.1 Build.cs / Target.cs — 模块依赖与编译配置                    | 2026-06-23 | 笔记: 理解 Public/Private 依赖区别，Target.cs 管编译目标，Build.cs 管模块依赖
-- [ ] 0.2 .uproject / Plugin 结构 — 创建第一个插件
+- [x] 0.2 .uproject / Plugin 结构 — 创建第一个插件                    | 2026-06-24 | 笔记: 插件=描述文件+模块，IModuleInterface 生命周期，Public/Private 可见性，主项目可依赖插件模块
 - [ ] 0.3 Module 划分 (Runtime / Editor / PrimaryGameModule)
 - [ ] 0.4 第三方库集成 (ThirdParty + .lib 链接)
 - [ ] 0.5 Live Coding / Hot Reload 工作流

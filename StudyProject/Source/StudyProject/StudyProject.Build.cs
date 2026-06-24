@@ -46,6 +46,7 @@ public class StudyProject : ModuleRules
 			// "Slate", "SlateCore",  // 用到 Slate UI 时
 			// "RenderCore", "RHI",   // 用到渲染相关时
 			// "NavigationSystem",    // 用到导航时
+			"StudyPlugin",            // 0.2 — 主项目依赖插件模块，调用插件提供的类
 		});
 
 		// ━━━━━━━━━━━━━━━━ 演示：条件依赖 ━━━━━━━━━━━━━━━━

@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Study Plugin",
+	"Description": "知识点 0.2 — 第一个插件。演示 .uplugin 配置、插件模块结构、模块启动/关闭回调。",
+	"Category": "Study",
+	"CreatedBy": "joker0012",
+	"CreatedByURL": "https://github.com/joker0012/UE5-Study",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "StudyPlugin",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
