@@ -10,7 +10,7 @@
 | 02 | `02-plugin-structure/` | .uproject / Plugin 结构 — 创建第一个插件 ✅ |
 | 03 | `03-module-split/` | Module 划分 (Runtime / Editor / PrimaryGameModule) ✅ |
 | 04 | `04-thirdparty-lib/` | 第三方库集成 (ThirdParty + .lib 链接) ✅ |
-| 05 | `05-live-coding/` | Live Coding / Hot Reload 工作流 |
+| 05 | `05-live-coding/` | Live Coding / Hot Reload 工作流 ✅ |
 
 ## 引擎版本
 

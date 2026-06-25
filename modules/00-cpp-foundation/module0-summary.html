@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模块 0 · C++ 工程基建 — 知识点总结</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#7c8cf8;--green:#27ae60;--orange:#e67e22;--red:#c0392b;--blue:#3498db;--purple:#a855f7}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;padding-bottom:60px}
+.hero{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);padding:48px 32px 40px;text-align:center;border-bottom:2px solid var(--border)}
+.hero h1{font-size:30px;color:#fff;margin-bottom:6px}
+.hero h1 .badge{font-size:14px;background:var(--green);color:#fff;padding:2px 12px;border-radius:12px;vertical-align:middle;margin-left:8px}
+.hero p{font-size:14px;color:var(--muted);max-width:720px;margin:0 auto}
+.hero .stats{margin-top:20px;display:flex;gap:36px;justify-content:center;flex-wrap:wrap}
+.hero .stat .num{font-size:34px;font-weight:800;color:var(--accent)}
+.hero .stat .lbl{font-size:12px;color:var(--muted);margin-top:2px}
+.container{max-width:1080px;margin:0 auto;padding:32px 20px}
+.section{margin-bottom:48px}
+.section-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.section-title .icon{font-size:26px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;transition:border-color .2s,transform .15s}
+.card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.card-num{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;flex-shrink:0}
+.card-title{font-size:16px;font-weight:700;color:#e8e8f8}
+.card-tags{display:flex;gap:6px;margin-left:auto}
+.tag{font-size:10px;padding:2px 8px;border-radius:8px;font-weight:600}
+.card-body{font-size:13px;color:var(--muted);margin-bottom:12px}
+.card-body strong{color:var(--text)}
+.card-points{list-style:none;padding:0}
+.card-points li{font-size:12.5px;color:#b0b8c4;padding:3px 0 3px 18px;position:relative}
+.card-points li::before{content:"▸";position:absolute;left:0;color:var(--accent)}
+.code-block{background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:14px 16px;font-family:"Cascadia Code","Fira Code",Consolas,monospace;font-size:12.5px;color:#b0c4de;overflow-x:auto;margin:12px 0;white-space:pre}
+.code-block .kw{color:#c678dd}.code-block .str{color:#98c379}.code-block .cmt{color:#5c6370}.code-block .fn{color:#61afef}
+.compare{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+.compare th,.compare td{border:1px solid var(--border);padding:8px 12px;text-align:left}
+.compare th{background:#1c2230;color:#9cb0ff;font-weight:600}
+.compare td{color:#b0b8c4}
+.compare tr:hover td{background:rgba(124,140,248,.05)}
+.flow{background:#0d1117;border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin:16px 0;font-family:monospace;font-size:13px;color:#bcd;line-height:2.2}
+.flow .step{display:inline-block;padding:2px 12px;border-radius:6px;margin:0 4px}
+.flow .arrow{color:var(--accent);margin:0 6px}
+.callout{background:rgba(39,174,96,.08);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13px;color:#b0d8b0}
+.callout.warn{background:rgba(231,76,60,.08);border-left-color:var(--red)}
+.callout .label{font-weight:700;color:var(--green);margin-bottom:4px;display:block}
+.callout.warn .label{color:var(--red)}
+.foot{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--border)}
+.progress-bar{width:100%;height:8px;background:var(--border);border-radius:4px;margin-top:8px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--accent));border-radius:4px}
+</style></head><body>
+
+<div class="hero">
+<h1>模块 0 · C++ 工程基建 <span class="badge">✅ 100%</span></h1>
+<p>在写任何 UE5 C++ 代码之前，先搞懂工程骨架：编译配置、插件结构、模块拆分、第三方库集成、热重载工作流</p>
+<div class="stats">
+<div class="stat"><div class="num">5</div><div class="lbl">知识点</div></div>
+<div class="stat"><div class="num">5</div><div class="lbl">已完成</div></div>
+<div class="stat"><div class="num">3</div><div class="lbl">模块/插件</div></div>
+<div class="stat"><div class="num">1</div><div class="lbl">第三方库</div></div>
+</div>
+</div>
+
+<div class="container">
+
+<!-- ━━━━━━━━━━━━━━━━ 知识点卡片 ━━━━━━━━━━━━━━━━ -->
+<div class="section">
+<div class="section-title"><span class="icon">📦</span> 知识点详解</div>
+<div class="cards">
+
+<!-- 0.1 -->
+<div class="card">
+<div class="card-head">
+<div class="card-num" style="background:var(--blue)">0.1</div>
+<div class="card-title">Build.cs / Target.cs</div>
+<div class="card-tags"><span class="tag" style="background:var(--green);color:#fff">入门</span></div>
+</div>
+<div class="card-body"><strong>Target.cs</strong> 定义编译目标（Game/Editor），<strong>Build.cs</strong> 定义模块依赖（Public/Private）。</div>
+<ul class="card-points">
+<li><strong>TargetType</strong>：Game（打包）/ Editor（开发）/ Client / Server</li>
+<li><strong>Public 依赖</strong>：头文件中 #include 了 → 传递性继承</li>
+<li><strong>Private 依赖</strong>：只在 .cpp 中用 → 不暴露给使用者</li>
+<li><strong>PCHUsage</strong>：UseExplicitOrSharedPCHs 最常用</li>
+<li><strong>PublicDefinitions</strong>：向依赖方传递宏定义</li>
+<li><strong>条件依赖</strong>：<code>if (Target.bBuildEditor)</code> 编辑器专属模块</li>
+</ul>
+<div class="code-block"><span class="cmt">// Build.cs 核心</span>
+<span class="kw">PublicDependencyModuleNames</span>.AddRange(<span class="kw">new string</span>[] {
+    <span class="str">"Core"</span>, <span class="str">"CoreUObject"</span>, <span class="str">"Engine"</span>, <span class="str">"GameplayTags"</span>
+});
+<span class="cmt">// Target.cs 核心</span>
+Type = TargetType.Editor;
+ExtraModuleNames.Add(<span class="str">"StudyProject"</span>);</div>
+<div class="callout warn"><span class="label">⚠ 踩坑</span>改了 Build.cs 后增量编译可能不生效，必须清 <code>Intermediate\Build</code> 全量重编</div>
+</div>
+
+<!-- 0.2 -->
+<div class="card">
+<div class="card-head">
+<div class="card-num" style="background:var(--purple)">0.2</div>
+<div class="card-title">插件结构 .uplugin</div>
+<div class="card-tags"><span class="tag" style="background:var(--green);color:#fff">入门</span></div>
+</div>
+<div class="card-body">插件 = <strong>.uplugin 描述文件</strong> + 一个或多个<strong>模块</strong>。模块通过 <code>IModuleInterface</code> 管理生命周期。</div>
+<ul class="card-points">
+<li><strong>.uplugin</strong>：JSON 格式，声明模块列表、类型、加载时机</li>
+<li><strong>IModuleInterface</strong>：StartupModule / ShutdownModule 生命周期</li>
+<li><strong>IMPLEMENT_MODULE</strong>：注册宏，没有它模块无法加载</li>
+<li><strong>Public/ 目录</strong>：对外暴露的头文件 + <code>XXX_API</code> 导出宏</li>
+<li><strong>Private/ 目录</strong>：内部实现，外部不可见</li>
+<li><strong>主项目依赖插件</strong>：Build.cs 加插件模块名 + .uproject 启用</li>
+</ul>
+<div class="code-block"><span class="cmt">// .uplugin 模块声明</span>
+<span class="str">"Modules"</span>: [{ <span class="str">"Name"</span>: <span class="str">"StudyPlugin"</span>, <span class="str">"Type"</span>: <span class="str">"Runtime"</span> }]
+
+<span class="cmt">// 模块注册宏</span>
+<span class="kw">IMPLEMENT_MODULE</span>(FStudyPluginModule, StudyPlugin)</div>
+</div>
+
+<!-- 0.3 -->
+<div class="card">
+<div class="card-head">
+<div class="card-num" style="background:var(--orange)">0.3</div>
+<div class="card-title">Module 划分 Runtime/Editor</div>
+<div class="card-tags"><span class="tag" style="background:var(--orange);color:#fff">进阶</span></div>
+</div>
+<div class="card-body">把插件拆成 <strong>Runtime 模块</strong>（打包也编译）和 <strong>Editor 模块</strong>（仅编辑器编译），依赖方向<strong>单向</strong>。</div>
+<table class="compare">
+<tr><th>模块类型</th><th>编译时机</th><th>能依赖</th></tr>
+<tr><td>Runtime</td><td>编辑器 + 打包</td><td>只能依赖 Runtime</td></tr>
+<tr><td>Editor</td><td>仅编辑器</td><td>Runtime + Editor</td></tr>
+<tr><td>Developer</td><td>Dev/Staging</td><td>Runtime + Developer</td></tr>
+</table>
+<div class="callout warn"><span class="label">⚠ 铁律</span>Editor → Runtime ✅ &nbsp; Runtime → Editor ❌（打包编译失败）</div>
+<ul class="card-points">
+<li><strong>PrimaryGameModule</strong>：.uproject 中 Modules[0]，游戏入口</li>
+<li><strong>ToolMenus</strong>：注册编辑器工具栏按钮</li>
+<li><strong>FAppStyle</strong>：UE5.7 替代废弃的 FEditorStyle</li>
+</ul>
+</div>
+
+<!-- 0.4 -->
+<div class="card">
+<div class="card-head">
+<div class="card-num" style="background:var(--red)">0.4</div>
+<div class="card-title">第三方库集成</div>
+<div class="card-tags"><span class="tag" style="background:var(--orange);color:#fff">进阶</span></div>
+</div>
+<div class="card-body">把 C/C++ 静态库集成到 UE 模块中，<strong>三步走</strong>：头文件路径 → 链接 .lib → Wrapper 包装。</div>
+<div class="code-block"><span class="cmt">// Build.cs 第三方库配置</span>
+<span class="kw">string</span> LibDir = Path.Combine(ModuleDirectory, <span class="str">".."</span>, <span class="str">"ThirdParty"</span>, <span class="str">"SimpleMathLib"</span>);
+
+<span class="cmt">// 1. 头文件路径</span>
+PublicIncludePaths.Add(Path.Combine(LibDir, <span class="str">"include"</span>));
+
+<span class="cmt">// 2. 链接 .lib</span>
+PublicAdditionalLibraries.Add(Path.Combine(LibDir, <span class="str">"lib"</span>, <span class="str">"SimpleMathLib.lib"</span>));</div>
+<ul class="card-points">
+<li><strong>extern "C"</strong>：防止 C++ name mangling 导致链接失败</li>
+<li><strong>Wrapper 模式</strong>：封装 C API 为 UE 风格的类</li>
+<li><strong>静态库</strong>：代码直接编入模块，打包自动包含</li>
+<li><strong>动态库</strong>：额外需要 <code>RuntimeDependencies</code> 拷贝 .dll</li>
+<li><strong>多平台</strong>：用 <code>Target.Platform</code> 选择对应平台的库</li>
+</ul>
+</div>
+
+<!-- 0.5 -->
+<div class="card">
+<div class="card-head">
+<div class="card-num" style="background:var(--accent)">0.5</div>
+<div class="card-title">Live Coding / Hot Reload</div>
+<div class="card-tags"><span class="tag" style="background:var(--green);color:#fff">入门</span></div>
+</div>
+<div class="card-body"><strong>Live Coding</strong> 秒级热重载函数体（不丢状态），<strong>Hot Reload</strong> 完整重编模块（可加反射属性但丢状态）。</div>
+<table class="compare">
+<tr><th></th><th>Live Coding</th><th>Hot Reload</th></tr>
+<tr><td>速度</td><td>秒级</td><td>较慢</td></tr>
+<tr><td>改函数体</td><td>✅</td><td>✅</td></tr>
+<tr><td>加 UPROPERTY</td><td>❌</td><td>✅</td></tr>
+<tr><td>运行时状态</td><td>保留</td><td>重置</td></tr>
+<tr><td>改 Build.cs</td><td>❌</td><td>❌</td></tr>
+</table>
+<div class="flow">
+<span class="step" style="background:rgba(39,174,96,.2);color:#7dd87d">改函数体</span>
+<span class="arrow">→</span> <span class="step" style="background:rgba(52,152,219,.2);color:#7dc8f7">Live Coding (秒级)</span>
+<span class="arrow">→</span> 不够？
+<span class="arrow">→</span> <span class="step" style="background:rgba(230,126,34,.2);color:#f0b060">加反射属性 → Hot Reload</span>
+<span class="arrow">→</span> 不够？
+<span class="arrow">→</span> <span class="step" style="background:rgba(192,57,43,.2);color:#e87060">改 Build.cs → 清缓存全量重编</span>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━ 项目架构图 ━━━━━━━━━━━━━━━━ -->
+<div class="section">
+<div class="section-title"><span class="icon">🏗️</span> 项目架构总览</div>
+<div class="code-block"><span class="cmt">StudyProject/</span>
+├── <span class="fn">StudyProject.uproject</span>          <span class="cmt"># 项目描述：Modules + Plugins 列表</span>
+├── <span class="fn">Source/</span>
+│   ├── StudyProject.Target.cs       <span class="cmt"># 0.1 — Game 编译目标</span>
+│   ├── StudyProjectEditor.Target.cs <span class="cmt"># 0.1 — Editor 编译目标</span>
+│   └── StudyProject/
+│       ├── StudyProject.Build.cs    <span class="cmt"># 0.1 — 主模块依赖（含 StudyPlugin）</span>
+│       ├── BuildConfigTestActor     <span class="cmt"># 0.1~0.4 — 测试 Actor（验证所有依赖）</span>
+│       └── LiveCodingDemoActor      <span class="cmt"># 0.5 — Live Coding 演示</span>
+│
+└── <span class="fn">Plugins/StudyPlugin/</span>           <span class="cmt"># 0.2 — 第一个插件</span>
+    ├── StudyPlugin.uplugin          <span class="cmt"># 0.3 — 声明 Runtime + Editor 两个模块</span>
+    └── Source/
+        ├── ThirdParty/SimpleMathLib/ <span class="cmt"># 0.4 — 第三方 C 库</span>
+        │   ├── include/simple_math.h
+        │   ├── lib/SimpleMathLib.lib
+        │   └── simple_math.c
+        ├── StudyPlugin/             <span class="cmt"># 0.3 — Runtime 模块</span>
+        │   ├── StudyPlugin.Build.cs <span class="cmt"># 0.4 — 含 ThirdParty 链接配置</span>
+        │   ├── Public/
+        │   │   ├── StudyPluginModule.h      <span class="cmt"># 模块生命周期</span>
+        │   │   ├── StudyPluginExample.h     <span class="cmt"># 示例类</span>
+        │   │   └── SimpleMathWrapper.h      <span class="cmt"># 0.4 — 第三方库包装</span>
+        │   └── Private/
+        │       ├── StudyPluginModule.cpp
+        │       ├── StudyPluginExample.cpp
+        │       └── SimpleMathWrapper.cpp
+        └── StudyPluginEditor/       <span class="cmt"># 0.3 — Editor 模块（打包排除）</span>
+            ├── StudyPluginEditor.Build.cs  <span class="cmt"># 依赖 StudyPlugin + UnrealEd</span>
+            ├── Public/
+            │   └── StudyPluginEditorModule.h
+            └── Private/
+                └── StudyPluginEditorModule.cpp  <span class="cmt"># 工具栏按钮</span></div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━ 依赖关系图 ━━━━━━━━━━━━━━━━ -->
+<div class="section">
+<div class="section-title"><span class="icon">🔗</span> 依赖关系图</div>
+<div class="code-block">
+                    <span class="cmt">┌─────────────────┐</span>
+                    <span class="cmt">│  .uproject       │</span>
+                    <span class="cmt">│  Modules[0]      │</span>
+                    <span class="cmt">│  = StudyProject  │</span>
+                    <span class="cmt">└────────┬────────┘</span>
+                             <span class="cmt">│</span>
+                    <span class="cmt">┌────────▼────────┐         ┌──────────────────┐</span>
+                    <span class="cmt">│  StudyProject    │────────▶│  StudyPlugin      │</span>
+                    <span class="cmt">│  (主模块/Runtime) │ Private │  (Runtime 模块)    │</span>
+                    <span class="cmt">│                  │  Dep    │                   │</span>
+                    <span class="cmt">│  BuildConfigTest │         │  FStudyPluginExample│</span>
+                    <span class="cmt">│  Actor           │         │  FSimpleMathWrapper │───┐
+                    <span class="cmt">│  LiveCodingDemo  │         └──────────────────┘   │
+                    <span class="cmt">│  Actor           │                  ▲              │
+                    <span class="cmt">└──────────────────┘                  │              │
+                                              <span class="cmt">│ Public Dep    │</span>
+                    <span class="cmt">┌──────────────────┐         ┌───────┴──────┐    │
+                    <span class="cmt">│  StudyPluginEditor│────────▶│              │    │
+                    <span class="cmt">│  (Editor 模块)    │ Public  │              │    │
+                    <span class="cmt">│                   │  Dep    │              │    │
+                    <span class="cmt">│  工具栏按钮       │         │              │    │
+                    <span class="cmt">└───────────────────┘         └──────────────┘    │
+                                                         <span class="cmt">│              │</span>
+                                                  <span class="cmt">┌─────▼──────┐</span>
+                                                  <span class="cmt">│ SimpleMathLib│</span>
+                                                  <span class="cmt">│ (.lib 静态库)│</span>
+                                                  <span class="cmt">└────────────┘</span>
+
+<span class="cmt">依赖方向（单向）：</span>
+  StudyProject ──▶ StudyPlugin ──▶ SimpleMathLib
+  StudyPluginEditor ──▶ StudyPlugin（Editor 可调 Runtime，反过来不行）</div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━ 踩坑总结 ━━━━━━━━━━━━━━━━ -->
+<div class="section">
+<div class="section-title"><span class="icon">🚨</span> 踩坑总结</div>
+<div class="cards">
+<div class="card">
+<div class="card-head"><div class="card-num" style="background:var(--red)">!</div><div class="card-title">#if vs #ifdef</div></div>
+<div class="card-body">UE5 开启 <code>/we4668</code>，<code>#if MACRO</code> 在宏未定义时会报 C4668 错误。</div>
+<div class="callout"><span class="label">解决</span>用 <code>#ifdef MACRO</code> 替代 <code>#if MACRO</code></div>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-num" style="background:var(--red)">!</div><div class="card-title">Build.cs 增量缓存</div></div>
+<div class="card-body">修改 Build.cs 加新依赖后，UBT 增量编译不重新解析依赖，导致 LNK2019。</div>
+<div class="callout"><span class="label">解决</span>删 <code>Intermediate\Build</code> → 重新生成项目文件 → 全量编译</div>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-num" style="background:var(--orange)">!</div><div class="card-title">FEditorStyle 废弃</div></div>
+<div class="card-body">UE5.7 中 <code>FEditorStyle::GetStyleSetName()</code> 已废弃，编译报 C4996。</div>
+<div class="callout"><span class="label">解决</span>改用 <code>FAppStyle::GetAppStyleSetName()</code>，<code>#include "Styling/AppStyle.h"</code></div>
+</div>
+</div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━ 编译命令速查 ━━━━━━━━━━━━━━━━ -->
+<div class="section">
+<div class="section-title"><span class="icon">⚡</span> UBT 编译命令速查</div>
+<div class="code-block"><span class="cmt"># 变量</span>
+$UBT  = <span class="str">"H:\UE_Engine\UE_5.7\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.exe"</span>
+$PROJ = <span class="str">"H:\UE_Project\Study\StudyProject\StudyProject.uproject"</span>
+
+<span class="cmt"># 1. 常规增量编译（改了 .h/.cpp 但没改 Build.cs）</span>
+& $UBT StudyProjectEditor Win64 Development -project=$PROJ -waitmutex
+
+<span class="cmt"># 2. 改了 Build.cs 后（加/删依赖、改 PCH、加宏定义）</span>
+<span class="kw">Remove-Item</span> <span class="str">"...\Intermediate\Build"</span> -Recurse -Force
+& $UBT -projectfiles -project=$PROJ -game -engine
+& $UBT StudyProjectEditor Win64 Development -project=$PROJ -waitmutex
+
+<span class="cmt"># 3. 重新生成项目文件</span>
+& $UBT -projectfiles -project=$PROJ -game -engine</div>
+</div>
+
+</div>
+
+<div class="foot">
+UE5 Study Project · 模块 0 · C++ 工程基建 · 5/5 完成 (100%)<br>
+引擎版本 UE 5.7 · <a href="https://github.com/joker0012/UE5-Study" style="color:var(--accent)">GitHub 仓库</a>
+</div>
+
+</body></html>
