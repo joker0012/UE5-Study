@@ -31,9 +31,10 @@ public class StudyPluginEditor : ModuleRules
 			"Engine",
 			"Slate",
 			"SlateCore",
-			"UnrealEd",             // 编辑器核心
-			"EditorStyle",          // 编辑器样式
+			"UnrealEd",             // 编辑器核心（GEditor 等）
+			"EditorStyle",          // 编辑器样式（FEditorStyle，已废弃但部分 API 仍需）
 			"ToolMenus",            // 菜单/工具栏注册
+			"LevelEditor",          // 关卡编辑器（ActorContextMenu 等路径需要）
 		});
 	}
 }

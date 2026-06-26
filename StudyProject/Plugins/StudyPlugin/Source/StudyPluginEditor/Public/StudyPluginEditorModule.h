@@ -1,8 +1,10 @@
 // StudyPluginEditorModule.h
 // ============================================================
-// 知识点 0.3 — Editor 模块接口
-// Editor 模块在 StartupModule 中注册工具栏按钮，
-// 点击按钮后调用 Runtime 模块的方法 —— 验证 Editor → Runtime 单向依赖。
+// 知识点 0.3 (扩展) — Editor 模块接口
+// 演示在编辑器多个位置注册菜单/按钮：
+//   1. 主工具栏（Play 工具栏）
+//   2. 顶部菜单栏（Window 菜单下）
+//   3. 视口右键菜单（Actor 上下文菜单）
 // ============================================================
 
 #pragma once
@@ -17,12 +19,20 @@ public:
 	virtual void ShutdownModule() override;
 
 private:
-	// 注册工具栏按钮
+	// ━━━━━━━━━━━━━━━━ 菜单注册方法 ━━━━━━━━━━━━━━━━
+
+	// 1. 主工具栏按钮
 	void RegisterToolbarButton();
 
-	// 工具栏按钮点击回调
-	void OnToolbarButtonClicked();
+	// 2. 顶部菜单栏项
+	void RegisterMenuBarEntry();
 
-	// 标记是否已注册，用于 ShutdownModule 时判断是否需要注销
-	bool bHasRegistered = false;
+	// 3. 视口右键菜单项
+	void RegisterContextMenuEntry();
+
+	// ━━━━━━━━━━━━━━━━ 回调方法 ━━━━━━━━━━━━━━━━
+
+	void OnToolbarButtonClicked();
+	void OnMenuBarClicked();
+	void OnContextMenuClicked();
 };
