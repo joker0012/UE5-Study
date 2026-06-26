@@ -308,6 +308,236 @@ $PROJ = <span class="str">"H:\UE_Project\Study\StudyProject\StudyProject.uprojec
 & $UBT -projectfiles -project=$PROJ -game -engine</div>
 </div>
 
+<!-- ━━━━━━━━━━━━━━━━ 模块生命周期详解 ━━━━━━━━━━━━━━━━ -->
+<div class="section">
+<div class="section-title"><span class="icon">🔄</span> 模块生命周期详解 (IModuleInterface)</div>
+<div class="card" style="margin-bottom:16px">
+<div class="card-body">源码：<code>Engine/Source/Runtime/Core/Public/Modules/ModuleInterface.h</code>。模块 DLL 加载后，引擎按以下顺序调用 5 个回调：</div>
+<div class="code-block"><span class="cmt">// 1. DLL 加载后、模块对象创建后立即调用</span>
+<span class="cmt">//    适合：加载依赖模块、注册委托、初始化数据</span>
+<span class="kw">virtual void</span> <span class="fn">StartupModule</span>() {}
+
+<span class="cmt">// 2. 所有模块 Startup 后调用</span>
+<span class="cmt">//    适合：需要等依赖模块初始化完成后的操作</span>
+<span class="kw">virtual void</span> <span class="fn">PostLoadCallback</span>() {}
+
+<span class="cmt">// 3. 卸载前调用（还在正常运行状态）</span>
+<span class="cmt">//    适合：提前保存状态、通知其他模块</span>
+<span class="kw">virtual void</span> <span class="fn">PreUnloadCallback</span>() {}
+
+<span class="cmt">// 4. 模块即将卸载、对象即将销毁前调用</span>
+<span class="cmt">//    适合：注销注册的菜单、委托等</span>
+<span class="cmt">//    ⚠️ 按 StartupModule 的逆序调用 —— 保证依赖模块还没被卸载</span>
+<span class="kw">virtual void</span> <span class="fn">ShutdownModule</span>() {}
+
+<span class="cmt">// 控制方法</span>
+<span class="kw">virtual bool</span> <span class="fn">SupportsDynamicReloading</span>() { <span class="kw">return true</span>; }  <span class="cmt">// 是否支持热重载</span>
+<span class="kw">virtual bool</span> <span class="fn">SupportsAutomaticShutdown</span>() { <span class="kw">return true</span>; }  <span class="cmt">// 退出时自动关闭</span>
+<span class="kw">virtual bool</span> <span class="fn">IsGameModule</span>() <span class="kw">const</span> { <span class="kw">return false</span>; }  <span class="cmt">// 是否游戏模块</span></div>
+<div class="flow" style="font-size:12px">
+<span class="step" style="background:rgba(52,152,219,.2);color:#7dc8f7">加载 DLL</span>
+<span class="arrow">→</span> <span class="step" style="background:rgba(52,152,219,.2);color:#7dc8f7">new FModule()</span>
+<span class="arrow">→</span> <span class="step" style="background:rgba(39,174,96,.2);color:#7dd87d">StartupModule</span>
+<span class="arrow">→</span> <span class="step" style="background:rgba(39,174,96,.2);color:#7dd87d">PostLoadCallback</span>
+<span class="arrow">→</span> <span class="step" style="background:rgba(180,180,180,.15);color:#aaa">运行中...</span>
+<span class="arrow">→</span> <span class="step" style="background:rgba(230,126,34,.2);color:#f0b060">PreUnloadCallback</span>
+<span class="arrow">→</span> <span class="step" style="background:rgba(192,57,43,.2);color:#e87060">ShutdownModule</span>
+<span class="arrow">→</span> <span class="step" style="background:rgba(192,57,43,.2);color:#e87060">delete + 卸载 DLL</span>
+</div>
+</div>
+<table class="compare">
+<tr><th>默认实现类</th><th>IsGameModule()</th><th>用途</th></tr>
+<tr><td><code>FDefaultModuleImpl</code></td><td>false</td><td>引擎/插件模块，不需自定义生命周期</td></tr>
+<tr><td><code>FDefaultGameModuleImpl</code></td><td>true</td><td>游戏模块，不需自定义生命周期</td></tr>
+</table>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━ IMPLEMENT_MODULE 详解 ━━━━━━━━━━━━━━━━ -->
+<div class="section">
+<div class="section-title"><span class="icon">🏷️</span> IMPLEMENT_MODULE 详解</div>
+<div class="cards">
+<div class="card">
+<div class="card-head"><div class="card-num" style="background:var(--purple)">位置</div><div class="card-title">放在哪里？</div></div>
+<div class="card-body">放在模块的<strong>某个 .cpp 文件末尾、全局作用域</strong>中。一个模块只能有一个 IMPLEMENT_MODULE。</div>
+<div class="code-block"><span class="cmt">// StudyPluginModule.cpp 末尾</span>
+
+<span class="cmt">// ... 代码实现 ...</span>
+
+<span class="cmt">// ━━━ 末尾，全局作用域 ━━━</span>
+<span class="kw">IMPLEMENT_MODULE</span>(FStudyPluginModule, StudyPlugin)</div>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-num" style="background:var(--orange)">原理</div><div class="card-title">宏展开做了什么</div></div>
+<div class="card-body">生成模块工厂函数 + 注册 <code>FModuleInitializerEntry</code> 静态对象。</div>
+<div class="code-block"><span class="cmt">// 宏展开后（简化版）</span>
+<span class="kw">static</span> IModuleInterface* <span class="fn">InitializeStudyPluginModule</span>()
+{
+    <span class="kw">return new</span> FStudyPluginModule();  <span class="cmt">// 创建实例</span>
+}
+
+<span class="kw">static</span> FModuleInitializerEntry StudyPluginInitializerEntry(
+    TEXT(<span class="str">"StudyPlugin"</span>),        <span class="cmt">// 模块名</span>
+    InitializeStudyPluginModule   <span class="cmt">// 工厂函数</span>
+);</div>
+</div>
+</div>
+<table class="compare" style="margin-top:16px">
+<tr><th>宏</th><th>用途</th><th>IsGameModule()</th></tr>
+<tr><td><code>IMPLEMENT_MODULE</code></td><td>非游戏模块（引擎、工具、插件）</td><td>false</td></tr>
+<tr><td><code>IMPLEMENT_GAME_MODULE</code></td><td>游戏模块</td><td>true</td></tr>
+</table>
+<div class="callout"><span class="label">关键</span>第二个参数（模块名）必须与 .uplugin / .uproject / Build.cs 中的名字完全一致，否则 monolithic build 下会断言失败。</div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━ 模块管理与 PrimaryGameModule ━━━━━━━━━━━━━━━━ -->
+<div class="section">
+<div class="section-title"><span class="icon">🏗️</span> 模块管理与 PrimaryGameModule</div>
+<div class="cards">
+<div class="card">
+<div class="card-head"><div class="card-num" style="background:var(--blue)">管理</div><div class="card-title">模块管理的 6 个维度</div></div>
+<table class="compare" style="margin:0">
+<tr><th>维度</th><th>在哪里</th></tr>
+<tr><td>声明模块存在</td><td>.uproject / .uplugin → Modules 数组</td></tr>
+<tr><td>编译依赖</td><td>Build.cs → Public/PrivateDependency</td></tr>
+<tr><td>编译目标</td><td>Target.cs → ExtraModuleNames</td></tr>
+<tr><td>模块入口</td><td>.cpp 末尾 → IMPLEMENT_MODULE</td></tr>
+<tr><td>生命周期</td><td>继承 IModuleInterface</td></tr>
+<tr><td>获取实例</td><td>FModuleManager::LoadModuleChecked</td></tr>
+</table>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-num" style="background:var(--accent)">入口</div><div class="card-title">PrimaryGameModule</div></div>
+<div class="card-body">.uproject 中 <strong>Modules[0]</strong> 就是 PrimaryGameModule（主游戏模块）。</div>
+<div class="code-block"><span class="cmt">// .uproject</span>
+{
+    <span class="str">"Modules"</span>: [
+        { <span class="str">"Name"</span>: <span class="str">"StudyProject"</span> }  <span class="cmt">// ← Primary</span>
+    ]
+}</div>
+<ul class="card-points">
+<li>自动被 Target.cs 引用（不用手动写 ExtraModuleNames）</li>
+<li>是游戏入口，UHT 优先扫描</li>
+<li>其他游戏模块在 Build.cs 中依赖它</li>
+<li>名字必须与 Target.cs 中的 ExtraModuleNames 一致</li>
+</ul>
+</div>
+</div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━ 模块类型与 LoadingPhase ━━━━━━━━━━━━━━━━ -->
+<div class="section">
+<div class="section-title"><span class="icon">⚙️</span> 模块类型 (Type) 与加载时机 (LoadingPhase)</div>
+<table class="compare">
+<tr><th>Type</th><th>编译时机</th><th>能依赖</th><th>典型用途</th></tr>
+<tr><td><code>Runtime</code></td><td>编辑器 + 打包</td><td>Runtime</td><td>Actor、Component、游戏逻辑</td></tr>
+<tr><td><code>Editor</code></td><td>仅编辑器</td><td>Runtime + Editor</td><td>编辑器工具、Detail 自定义</td></tr>
+<tr><td><code>Developer</code></td><td>Dev/Staging</td><td>Runtime + Developer</td><td>开发工具、性能分析器</td></tr>
+<tr><td><code>ServerOnly</code></td><td>仅服务端</td><td>Runtime + Server</td><td>专用服务器逻辑</td></tr>
+<tr><td><code>ClientOnly</code></td><td>仅客户端</td><td>Runtime + Client</td><td>客户端专属逻辑</td></tr>
+</table>
+<table class="compare" style="margin-top:16px">
+<tr><th>LoadingPhase</th><th>时机</th><th>典型用途</th></tr>
+<tr><td><code>PostConfigInit</code></td><td>最早，配置加载后</td><td>需要读配置的底层模块</td></tr>
+<tr><td><code>PreDefault</code></td><td>大多数模块之前</td><td>需要被其他模块依赖的底层模块</td></tr>
+<tr><td><code>Default</code></td><td>正常时机（最常用）</td><td>90% 的模块</td></tr>
+<tr><td><code>PostDefault</code></td><td>大多数模块之后</td><td>需要等所有 Default 加载完</td></tr>
+<tr><td><code>PostEngineInit</code></td><td>引擎完全初始化后</td><td>不影响启动速度的模块</td></tr>
+</table>
+<div class="callout warn"><span class="label">⚠ 依赖铁律</span>Editor → Runtime ✅ &nbsp;|&nbsp; Runtime → Editor ❌（打包时 Editor 模块不存在，链接失败）</div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━ ToolMenus 详解 ━━━━━━━━━━━━━━━━ -->
+<div class="section">
+<div class="section-title"><span class="icon">📌</span> ToolMenus — 在编辑器各位置注册 UI</div>
+<div class="card" style="margin-bottom:16px">
+<div class="card-head"><div class="card-num" style="background:var(--green)">API</div><div class="card-title">核心 API</div></div>
+<div class="code-block"><span class="cmt">// 获取单例</span>
+UToolMenus* ToolMenus = UToolMenus::Get();
+
+<span class="cmt">// 在已有菜单上追加内容（不覆盖原有项）</span>
+UToolMenu* Menu = UToolMenus::Get()-><span class="fn">ExtendMenu</span>(<span class="str">"菜单路径"</span>);
+
+<span class="cmt">// 注册全新菜单</span>
+UToolMenu* Menu = UToolMenus::Get()-><span class="fn">RegisterMenu</span>(<span class="str">"菜单路径"</span>);
+
+<span class="cmt">// 注销某个 Owner 注册的所有条目</span>
+UToolMenus::Get()-><span class="fn">UnregisterOwner</span>(<span class="kw">this</span>);</div>
+</div>
+<table class="compare">
+<tr><th>位置</th><th>路径</th><th>说明</th></tr>
+<tr><td>Play 工具栏</td><td><code>LevelEditor.LevelEditorToolBar.PlayToolBar</code></td><td>顶部 Play 按钮所在工具栏</td></tr>
+<tr><td>Modes 工具栏</td><td><code>LevelEditor.LevelEditorToolBar.ModesToolBar</code></td><td>左侧模式选择栏</td></tr>
+<tr><td>Window 菜单</td><td><code>LevelEditor.MainMenu.Window</code></td><td>顶部菜单栏 Window 项</td></tr>
+<tr><td>File 菜单</td><td><code>LevelEditor.MainMenu.File</code></td><td>顶部菜单栏 File 项</td></tr>
+<tr><td>Actor 右键菜单</td><td><code>LevelEditor.ActorContextMenu</code></td><td>视口选中 Actor 右键</td></tr>
+<tr><td>Component 右键</td><td><code>LevelEditor.ComponentContextMenu</code></td><td>组件右键</td></tr>
+<tr><td>Scene Outliner 右键</td><td><code>LevelEditor.SceneOutlinerContextMenu</code></td><td>世界大纲右键</td></tr>
+<tr><td>空白处右键</td><td><code>LevelEditor.EmptySelectionContextMenu</code></td><td>视口未选中右键</td></tr>
+</table>
+<div class="cards" style="margin-top:16px">
+<div class="card">
+<div class="card-head"><div class="card-num" style="background:var(--orange)">工具栏</div><div class="card-title">InitToolBarButton</div></div>
+<div class="code-block"><span class="cmt">// 参数：名称、动作、标签、tooltip、图标</span>
+Section.AddEntry(FToolMenuEntry::<span class="fn">InitToolBarButton</span>(
+    <span class="str">"MyButton"</span>,
+    FExecuteAction::CreateRaw(<span class="kw">this</span>, &FMyModule::OnClicked),
+    LOCTEXT(<span class="str">"Label"</span>, <span class="str">"按钮文字"</span>),
+    LOCTEXT(<span class="str">"Tooltip"</span>, <span class="str">"提示"</span>),
+    FSlateIcon(FAppStyle::GetAppStyleSetName(), <span class="str">"Icons.Settings"</span>)
+));</div>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-num" style="background:var(--blue)">菜单项</div><div class="card-title">InitMenuEntry</div></div>
+<div class="code-block"><span class="cmt">// 参数：名称、标签、tooltip、图标、动作</span>
+<span class="cmt">// ⚠️ 注意：Icon 在 Action 前面！</span>
+Section.AddEntry(FToolMenuEntry::<span class="fn">InitMenuEntry</span>(
+    <span class="str">"MyMenuItem"</span>,
+    LOCTEXT(<span class="str">"Label"</span>, <span class="str">"菜单项"</span>),
+    LOCTEXT(<span class="str">"Tooltip"</span>, <span class="str">"提示"</span>),
+    FSlateIcon(FAppStyle::GetAppStyleSetName(), <span class="str">"Icons.Info"</span>),
+    FExecuteAction::CreateRaw(<span class="kw">this</span>, &FMyModule::OnClicked)
+));</div>
+</div>
+</div>
+<div class="callout" style="margin-top:16px"><span class="label">本项目示例</span>StudyPluginEditor 在三个位置注册了 UI 入口：① PlayToolBar 工具栏按钮 ② Window 菜单项 ③ ActorContextMenu 右键菜单项。点击后分别在 Output Log 输出验证信息。</div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━ FAppStyle 详解 ━━━━━━━━━━━━━━━━ -->
+<div class="section">
+<div class="section-title"><span class="icon">🎨</span> FAppStyle — UE5 统一样式系统</div>
+<div class="card" style="margin-bottom:16px">
+<div class="card-body">源码：<code>Engine/Source/Runtime/SlateCore/Public/Styling/AppStyle.h</code>。UE5 统一编辑器样式系统，替代旧版 <code>FEditorStyle</code>（UE5.4+ 废弃）。提供图标、颜色、字体、边距等样式资源访问。依赖模块：<code>SlateCore</code>。</div>
+<div class="code-block"><span class="cmt">// 主要 API</span>
+<span class="kw">static const</span> FName <span class="fn">GetAppStyleSetName</span>();           <span class="cmt">// 获取样式集名（最常用）</span>
+<span class="kw">static const</span> ISlateStyle& <span class="fn">Get</span>();                  <span class="cmt">// 获取样式引用</span>
+<span class="kw">static const</span> FSlateBrush* <span class="fn">GetBrush</span>(FName);         <span class="cmt">// 获取画刷/图标</span>
+<span class="kw">static const</span> FLinearColor& <span class="fn">GetColor</span>(FName);         <span class="cmt">// 获取颜色</span>
+<span class="kw">static</span> FSlateFontInfo <span class="fn">GetFontStyle</span>(FName);          <span class="cmt">// 获取字体</span>
+<span class="kw">static const</span> FMargin& <span class="fn">GetMargin</span>(FName);              <span class="cmt">// 获取边距</span></div>
+</div>
+<div class="cards">
+<div class="card">
+<div class="card-head"><div class="card-num" style="background:var(--green)">常用</div><div class="card-title">常用图标名</div></div>
+<div class="code-block">FSlateIcon(FAppStyle::GetAppStyleSetName(),
+    <span class="str">"Icons.Settings"</span>)   <span class="cmt">// 齿轮</span>
+    <span class="str">"Icons.Search"</span>)     <span class="cmt">// 搜索</span>
+    <span class="str">"Icons.Info"</span>)       <span class="cmt">// 信息</span>
+    <span class="str">"Icons.Delete"</span>)     <span class="cmt">// 删除</span>
+    <span class="str">"Icons.Plus"</span>)       <span class="cmt">// 添加</span>
+    <span class="str">"Icons.Edit"</span>)       <span class="cmt">// 编辑</span></div>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-num" style="background:var(--orange)">迁移</div><div class="card-title">FEditorStyle → FAppStyle</div></div>
+<div class="code-block"><span class="cmt">// ❌ 旧写法（UE5.7 已废弃 C4996）</span>
+FSlateIcon(FEditorStyle::GetStyleSetName(), <span class="str">"Icons.Settings"</span>)
+
+<span class="cmt">// ✅ 新写法</span>
+<span class="kw">#include</span> <span class="str">"Styling/AppStyle.h"</span>
+FSlateIcon(FAppStyle::GetAppStyleSetName(), <span class="str">"Icons.Settings"</span>)</div>
+</div>
+</div>
+</div>
+
 </div>
 
 <div class="foot">
