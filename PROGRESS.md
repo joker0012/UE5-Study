@@ -1,7 +1,7 @@
 # 学习进度
 
 > 最后更新：2026-06-26
-> 总进度：7 / 130
+> 总进度：8 / 130
 > 对应大纲：OUTLINE.md (v2)
 
 ## 进度总览
@@ -9,7 +9,7 @@
 | 模块 | 完成 | 总计 | 进度 |
 |------|:---:|:---:|:----:|
 | 0. C++ 工程基建 | 5 | 5 | 100% |
-| 1. 核心框架 & Gameplay 架构 | 2 | 19 | 11% |
+| 1. 核心框架 & Gameplay 架构 | 3 | 19 | 16% |
 | 2. 蓝图 & C++ 协作 | 0 | 7 | 0% |
 | 3. Enhanced Input 系统 | 0 | 6 | 0% |
 | 4. GAS (Gameplay Ability System) | 0 | 8 | 0% |
@@ -40,7 +40,7 @@
 
 - [x] 1.1 UObject & UFUNCTION / UPROPERTY 宏                         | 2026-06-26 | 笔记: UCLASS/UPROPERTY/UFUNCTION 三大反射宏; EditAnywhere/EditDefaultsOnly/VisibleAnywhere 访问控制; BlueprintCallable/BlueprintPure/BlueprintNativeEvent/BlueprintImplementableEvent 函数类型; TFieldIterator 遍历属性; FindPropertyByName 反射读写; NewObject<T>() 创建实例
 - [x] 1.2 UE_LOG / check / ensure 调试宏体系                           | 2026-06-26 | 笔记: UE_LOG 格式化+日志级别; 自定义 Log Category (DECLARE_LOG_CATEGORY_CLASS); check 崩溃断言 vs ensure 软断言(返回bool不崩); verify 在 Shipping 保留表达式; UE_CLOG 条件日志; UE_LOGFMT 结构化日志
-- [ ] 1.3 FName / FString / FText 区别与转换
+- [x] 1.3 FName / FString / FText 区别与转换                             | 2026-06-29 | 笔记: FName=全局ID表O(1)比较大小写不敏感; FString=可变数组支持拼接格式化; FText=不可变本地化文本; 互转关系(FName→FString→FText安全,逆向有损); FText::Format替代拼接; FText==比较身份非内容
 - [ ] 1.4 TArray / TMap / TSet 容器 + 迭代器
 - [ ] 1.5 AActor 生命周期
 - [ ] 1.6 UActorComponent vs USceneComponent

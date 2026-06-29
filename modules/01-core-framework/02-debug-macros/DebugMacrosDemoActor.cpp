@@ -13,8 +13,10 @@
 // 好处：可以在 Output Log 的 Category 列表里单独过滤/开关
 DECLARE_LOG_CATEGORY_CLASS(LogStudyDebug, Log, All);
 // 参数：Category名, 默认Verbosity, 编译时最大Verbosity
-// 注意：DECLARE_LOG_CATEGORY_CLASS 已是声明+定义一体化，无需再写 DEFINE_LOG_CATEGORY
-//       如需跨文件使用，则在 .h 中用 DECLARE_LOG_CATEGORY_EXTERN + .cpp 中用 DEFINE_LOG_CATEGORY
+
+DEFINE_LOG_CATEGORY(LogStudyDebug);
+// 注意：DECLARE_LOG_CATEGORY_CLASS + DEFINE_LOG_CATEGORY 配对使用（类内声明）
+//       DECLARE_LOG_CATEGORY_EXTERN + DEFINE_LOG_CATEGORY  配对使用（全局声明）
 
 
 // ━━━━━━━━━━━━━━━━ 构造 & 生命周期 ━━━━━━━━━━━━━━━━
@@ -29,7 +31,6 @@ void ADebugMacrosDemoActor::BeginPlay()
 	Super::BeginPlay();
 
 	RunAllDemos();
-	
 }
 
 // ━━━━━━━━━━━━━━━━ 主演示函数 ━━━━━━━━━━━━━━━━
