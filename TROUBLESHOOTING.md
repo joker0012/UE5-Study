@@ -13,6 +13,8 @@
 | 1 | C4668 未定义预处理器宏 | 0.1 | 2026-06-23 |
 | 2 | LNK2019 无法解析的外部符号 FGameplayTag | 0.1 | 2026-06-23 |
 | 3 | Build.cs 加了依赖但链接器没识别 | 0.1 | 2026-06-23 |
+| 4 | C2338 %s expects character pointer but got character | 1.1 | 2026-06-26 |
+| 5 | C2440 const void* 转 void* 丢失限定符 | 1.1 | 2026-06-26 |
 
 ---
 
@@ -135,6 +137,74 @@ Remove-Item -Path "H:\UE_Project\Study\StudyProject\Intermediate\Build" -Recurse
 
 - 修改 Build.cs 是高风险操作，UBT 的增量机制对 Build.cs 变更的检测不可靠
 - **经验法则**：凡是改了 Build.cs（加/删依赖、改 PCH 策略、加宏定义），一律清理中间文件全量重编
+
+---
+
+## #4 C2338: '%s' expects character pointer but got character
+
+- **日期**：2026-06-26
+- **模块**：1.1 UObject & UFUNCTION / UPROPERTY 宏
+- **报错原文**：
+  ```
+  ReflectionDataObject.cpp(95,2): error C2338: static_assert failed:
+  ''%s' expects character pointer but got character. (Is there an extra '*' somewhere?)'
+  ```
+
+### 原因分析
+
+`GetClass()->GetPrefixCPP()` 返回的是 `FString`（临时值），直接在 `UE_LOG` 中写 `*Class->GetPrefixCPP()` 时，编译器在格式化参数求值顺序上可能将返回值视为 `char` 而非字符串指针。UE5.7 的格式化字符串安全检查（`FormatStringSan`）会做编译期类型校验，检测到 `%s` 期望指针但收到字符。
+
+### 解决方式
+
+将返回值先存到局部变量，再取 `*`：
+```cpp
+// ❌ 错误 —— 临时值直接取 *，触发格式化安全检查
+UE_LOG(LogTemp, Log, TEXT("前缀: %s"), *Class->GetPrefixCPP());
+
+// ✅ 正确 —— 先存局部变量再取 *
+FString PrefixCPP = Class->GetPrefixCPP();
+UE_LOG(LogTemp, Log, TEXT("前缀: %s"), *PrefixCPP);
+```
+
+### 踩坑要点
+
+- UE5.7 的 `FormatStringSan` 是编译期检查，比旧版更严格
+- 任何返回临时 `FString` 的函数（如 `GetPrefixCPP()`、`GetPathName()` 等），在 `UE_LOG` 中都应先存局部变量
+- `*FString` 解引用得到 `const TCHAR*`，但如果 `FString` 是临时值，生命周期可能在参数求值前结束
+
+---
+
+## #5 C2440: const void* 转 void* 丢失限定符
+
+- **日期**：2026-06-26
+- **模块**：1.1 UObject & UFUNCTION / UPROPERTY 宏
+- **报错原文**：
+  ```
+  ReflectionDemoActor.cpp(147,17): error C2440: "初始化": 无法从"const ValueType *"
+  转换为"void *"
+  note: 转换丢失限定符
+  ```
+
+### 原因分析
+
+`PrintPropertyValue` 函数参数声明为 `const void* ContainerPtr`，而 `FProperty::ContainerPtrToValuePtr<void>()` 的 `const` 版本返回 `const void*`，但 `GetPropertyValue()` 等函数需要 `void*`（非 const）。C++ 不允许 `const void*` 隐式转换为 `void*`。
+
+### 解决方式
+
+将函数参数从 `const void*` 改为 `void*`：
+```cpp
+// ❌ 错误 —— const void* 导致后续所有反射 API 都收到 const 指针
+void PrintPropertyValue(FProperty* Property, const void* ContainerPtr);
+
+// ✅ 正确 —— 反射 API 需要 void* 来读写值
+void PrintPropertyValue(FProperty* Property, void* ContainerPtr);
+```
+
+### 踩坑要点
+
+- UE5 反射 API（`ContainerPtrToValuePtr`、`GetPropertyValue`、`SetPropertyValue`）的参数都是 `void*`（非 const）
+- 如果外部调用者有 `const UObject*`，需要先 `const_cast` 或在设计上避免 const
+- `PrintAllProperties(UObject* Object)` 传入 `Object` 时，`UObject*` → `void*` 隐式转换是合法的
 
 ---
 

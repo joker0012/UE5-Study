@@ -7,8 +7,9 @@ UE 一切之基石。理解 UObject → AActor → Component 的层级关系和 
 | # | 目录 | 知识点 |
 |---|------|--------|
 | 01 | `uobject-reflection/` | UObject & UFUNCTION / UPROPERTY 宏 |
-| 02 | `actor-lifecycle/` | AActor 生命周期 |
-| 03 | `component-types/` | UActorComponent vs USceneComponent |
+| 02 | `debug-macros/` | UE_LOG / check / ensure 调试宏体系 |
+| 03 | `actor-lifecycle/` | AActor ifecycle |
+| 04 | `component-types/` | UActorComponent vs USceneComponent |
 | 04 | `pawn-character/` | APawn & ACharacter |
 | 05 | `player-controller-state/` | APlayerController & APlayerState |
 | 06 | `game-mode/` | AGameModeBase vs AGameMode |
